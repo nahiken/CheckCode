@@ -1,0 +1,23 @@
+/* web/src/styles/approval-buttons.css —— 审批面板动作区(允许/拒绝)共用样式。
+ApprovalPanel 与 PlanApprovalPanel 的动作区结构完全一致(允许=绿、拒绝=红),
+只有面板外框配色不同,故把动作区提升为全局类(.approval-actions)。挂载点:main.ts。 */
+.approval-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.approval-actions button {
+  padding: 4px 16px;
+  cursor: pointer;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+.approval-actions button.ok {
+  color: #27ae60;
+  border-color: #27ae60;
+}
+.approval-actions button.no {
+  color: #c0392b;
+  border-color: #c0392b;
+}

@@ -1,0 +1,17 @@
+# Docker 构建上下文排除(避免 .venv/node_modules/测试进镜像)
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+tests/
+web/node_modules/
+web/dist/
+web/tests/
+runtime/
+.git/
+docs/
+*.egg-info/

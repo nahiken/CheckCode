@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / 前端
+node_modules/
+web/dist/
+web/node_modules/
+
+# 运行时数据(JSONL 持久化、审计日志)
+runtime/
+*.jsonl
+
+# 环境与密钥
+.env
+.env.local
+
+# Git Worktree 临时工作区
+.worktrees/
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+web/tsconfig.tsbuildinfo
+
+# ===== 私有资料:只留在本地,不公开 =====
+# 学习/原理笔记
+docs/
+# 个人简历、面试资料
+RESUME*.md
+RESUME_*.md
+TEACH_RESUME*.md
+INTERVIEW*.md
+RESUME_INTERVIEW.zip
+*简历*.md
+*面经*.md
+# 进展/交接/规划记录
+*PROGRESS*.md
+progress*.md
+progresses.md
+HANDOFF.md
+AUDIT_HANDOFF*.md
+NEXT_SESSION.md
+PROJECT_GUIDE.md
+PROJECT_VERIFICATION.md
+LEARNING_PLAN.md
+PHASED_PLAN.md
+FEATURE_COMPLETION_PLAN.md
+task_plan.md
+findings.md
+# 本地 Agent 工具配置
+.claude/

@@ -1,0 +1,45 @@
+# whycode.toml —— 装配配置示例(可拷贝为仓库根或任意路径,经 --config 指定)
+#
+# 用途:声明要连接的 MCP server 与要启用的技能。CLI 与 Web 工作台共用同一份语义。
+#   uv run mewcode run --task "修复 math_utils.py" --config whycode.toml
+#   uv run mewcode worker --queue ./mailbox.json --config whycode.toml
+#
+# 全部字段都可省略:文件不存在 / 全空 → 空装配(不连 MCP、只加载内置技能),
+# 与不传 --config 完全等价。装配失败(如 transport 字段写错)是**硬错误**,
+# 不静默跳过 —— 配置错误要当场看得见。
+
+# ── MCP servers ───────────────────────────────────────────────────────────────
+# 每个 server 一个子节,label 即 [mcp.servers.<label>] 的键名(会出现在工具名前)。
+# stdio 用 command(+args);http 用 url;两者互斥(同时写 → 装配报错)。
+# 未知 transport 字段 → 报错,不静默忽略。
+
+[mcp.servers.filesystem]
+# stdio:启动子进程通信。command 是字符串时,args 追加在其后。
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "."]
+
+# [mcp.servers.grep]
+# http:连接已运行的 streamable HTTP server(需服务端已就绪)。
+# 连接后先握手、再做健康探测(ping);不健康的 server 会在装配告警里外显,
+# 其工具本轮仍可见但调用可能失败 —— 不静默摘除,避免"工具凭空消失"。
+# url = "http://127.0.0.1:8931/mcp"
+
+# ── Skills ────────────────────────────────────────────────────────────────────
+# [skills].allow 是**显式技能选择**。三态语义:
+#   - 省略 / 空列表 → 不筛选(全部可见技能:内置 + 仓库 .whycode/skills/ + 用户级)
+#   - 非空列表     → 只启用列出的技能
+#
+# ⚠️ 收窄跟随**显式选择**:只有在非空 allow 时,被选技能的 allowedTools 才会
+# 收窄本次运行可用的工具面。默认路径(不筛选)不施加任何收窄 —— 否则仓库里
+# 一个只声明 mcp: 依赖的项目技能就会把本地工具面静默砍空。若可见集合里有声明型
+# 技能但没做显式选择,装配会给出告警提示"allowedTools 未生效"。
+#
+# [skills]
+# allow = ["explain", "editor"]
+
+# ── 技能目录约定(不需要在此声明)─────────────────────────────────────────────
+#   内置:   随 WhyCode 分发(skills/builtin/<name>/SKILL.md)
+#   项目级: <仓库>/.whycode/skills/<name>/SKILL.md
+#   用户级: ~/.whycode/skills/<name>/SKILL.md   (可用 WHYCODE_USER_DIR 覆盖)
+# 项目级/用户级(即 Fork Skill)**必须**声明 allowedTools,否则拒绝加载。
+# allowedTools 里可写:mcp:<server> / skill:<name> / 裸本地工具名(如 read_file)。

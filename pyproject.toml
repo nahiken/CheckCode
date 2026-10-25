@@ -1,0 +1,77 @@
+[project]
+name = "whycode"
+version = "0.6.0"
+description = "安全可控 Coding Agent 工程工作台 — 面向本地代码仓库的安全型 Coding Agent"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.7",
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    "mcp>=2.1.1",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+# 官方 Anthropic SDK(可选):装了走 SDK,未装走内置 httpx 实现(接口与行为一致)。
+# 不设为硬依赖 —— 只配 OpenAI 兼容端点的用户不该为它付安装/导入成本。
+anthropic = [
+    "anthropic>=0.40",
+]
+# 终端工作台(Textual,可选):`mewcode-tui`。同样不设硬依赖 ——
+# CLI/API/Eval 路径不该为 Textual+Rich 约 0.5–1s 的导入成本买单。
+tui = [
+    "textual>=0.86",
+]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "httpx-sse>=0.4",
+    "anthropic>=0.40",
+    "textual>=0.86",
+]
+
+[project.scripts]
+mewcode = "cli.main:main"
+mewcode-eval = "cli.main:eval_main"
+mewcode-tui = "tui.main:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent*", "tools*", "policy*", "hooks*", "worktree*", "verify*", "store*", "context*", "mcp_client*", "skills*", "mailbox*", "api*", "cli*", "eval*", "assembly*", "workbench*", "tui*"]
+exclude = ["tests*", "web*", "docs*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q"
+# demo_repo 是独立的示例仓库,其测试由 Agent/评测触发,不纳入本套件
+norecursedirs = ["tests/fixtures", "fixtures", "*.egg-info"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["tests/fixtures", "docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = []
+
+# 测试文件里的长 SSE payload 字符串按行拼接比拆分更可读
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["E501"]
+# eval/tasks.py 的中文任务描述是面向 LLM 的提示词,不按代码行长拆分
+"eval/tasks.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+exclude = ["tests/fixtures/demo_repo"]

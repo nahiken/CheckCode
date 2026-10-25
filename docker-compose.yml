@@ -1,0 +1,29 @@
+# WhyCode 全栈编排:api(FastAPI + SSE)+ web(Vue/Nginx,静态 + /api 反代)
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # 用环境变量注入 LLM 配置(.env 由 compose 层传入,不写死密钥)
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com/v1}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/tasks')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      # Nginx 反代到 api 服务(compose 服务名)
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
